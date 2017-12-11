@@ -1,0 +1,21 @@
+class Controller_Example extends Controller_Template
+{
+    public $template = 'template_admin';
+
+    public function action_index()
+    {
+        $this->template->title   = 'Example Page';
+        $this->template->content = View::forge('test/index', $data);
+
+        // this will show content in template
+    }
+
+    public function action_example()
+    {
+        $data['title']   = "Example Page";
+        $data['content'] = "Don't show me in the template";
+
+        // returned Response object takes precedence and will show content without template
+        return new Response(View::forge('index/test', $data));
+    }
+}

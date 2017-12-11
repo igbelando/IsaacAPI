@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es-ES">
+<head>
+  <meta charset="UTF-8">
+ 
+  <script typ="text/javascript">
+    function ajax(){
+      var userName = document.getElementById('name').value;
+      var ajaxURL = "http://localhost:8888/IsaacAPI/usersfuel/public/users/create.json";
+
+      if(window.XMLHttpRequest){
+        connection = new XMLHttpRequest();
+      }
+      else if(window.ActiveXObject){
+        connection = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      connection.onreadystatechange = response;
+
+      connection.open('POST', ajaxURL);
+      connection.setRequestHeader("Content-Type, application/x-www-form-urlencoded");
+      connection.send("name=" + userName);
+
+    }
+    function response(){
+      if(connection.readyState == 4){
+        var response = JSON.parse(connection.responseText);
+        document.getElementById('code').innerHTML = response.code;
+        document.getElementById('message').innerHTML = response.message;
+        document.getElementById('user').innerHTML = response.user;
+        console.log(response);
+      }
+    }
+    function borrar()
+
+              
+ </script>
+</head>
+<body>
+      <input id='name' type="text">
+      <button onclick='ajax()'>Crear Usuario</button>
+      <div id='response'>
+        <p id='code'></p>
+        <p id='message'></p>
+        <p id='user'></p>
+      </div>
+ 
+</body>
+</html>
