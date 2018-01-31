@@ -3,6 +3,8 @@
 class Controller_Users extends Controller_Rest
 {
 
+    private $key = "EstonoeslallaveNOTECATASniAUnqueLoMiresNaNoN40y42058923";
+
     public function post_create()
     {
         try {
@@ -35,12 +37,33 @@ class Controller_Users extends Controller_Rest
         {
             $json = $this->response(array(
                 'code' => 500,
-                'message' => 'error interno del servidor',
+                'message' => $e->getMessage(),
+
             ));
 
             return $json;
         }        
     }
+
+    public function post_changePassword()
+    {
+        $change = $_POST;
+        $user = new Model_Users();
+        $user = Model_Users::find($_POST['id']);
+
+        $user->password = $change['password'];
+
+        $user->save();
+
+        $json = $this->response(array(
+            'code' => 200,
+            'mesaage' => 'Contraseña cambiada con exito',
+            'data' => ['password' => $change['password']]
+        ));
+
+        return $json;
+    }
+
 
     public function get_users()
     {
@@ -67,15 +90,46 @@ class Controller_Users extends Controller_Rest
 
     public function get_login()
     {
-        $users = Model_Users::find('all', array('where' => array(array('name', $input['name']),array('password', $input['password']) )));
+        try {
+            $input = $_GET;
+            $user = Model_Users::find('all', array(
+                'where' => array(
+                    array('name', $input['username']),
+                )
+            ));
 
-        if($input['name'] == 'name' && $input['password'] == 'password')
+            if ( ! empty($user) )
+            {
+                foreach ($user as $key => $value)
+                {
+                    $id = $user[$key]->id;
+                    $username = $user[$key]->name;
+                    $password = $password[$key]->password;
+                }
+            }
+            else
+            {
+                return $this->response(array('Error de Autentificacion' => 401));
+            }
+
+            if ($username == $input['username'] and $password == $input['password'])
+            {
+                $dataToken = array(
+                    "id" => $id,
+                    "username" => $username,
+                    "password" => $password
+                );
+                $token = JWT::encode($dataToken, $this->key);
+                return $this->response(array('Login Correcto' => 220), ['token' => $token, 'username' => $username]);
+            }
+            else
+            {
+                return $this->response(array('Error de Autenticacion' => 401));
+            }
+        }
+        catch (Exception $e)
         {
-            $json = $this->response(array(
-                'pass' => 'Te has logeado'
-                ));
+            return $this->response(array('Error interno del servidor' => 500));
         }
     }
-
-
 }
